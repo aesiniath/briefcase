@@ -21,6 +21,9 @@ library
 
   hs-source-dirs:    lib
 
+  exposed-modules:   Briefcase.TimeValueOfMoney
+                     Briefcase.Utilities
+
   ghc-options:       -Wall
                      -Wwarn
                      -fwarn-tabs
