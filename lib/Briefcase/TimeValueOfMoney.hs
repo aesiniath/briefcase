@@ -1,9 +1,14 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving  #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 module Briefcase.TimeValueOfMoney (
-    Money()
+    Money(..)
   , money
+  , FutureValue
+  , PresentValue
+  , Rate
+  , Periods
   , futureValue
   , presentValue
   , netPresentValue
@@ -21,8 +26,8 @@ newtype Money = Amount Double
     deriving (Num, Fractional, Real, RealFrac, Eq, Ord)
 
 --
--- | Take an amount as a Double and round it to hundredths of a dollar (aka
--- cents). Smart constructor (such a silly name) for Money type.
+-- | Take an amount as a Double and round it to hundredths of a dollar, aka
+-- cents. Smart constructor (such a silly name) for Money type.
 --
 money :: Double -> Money
 money x =
@@ -87,5 +92,5 @@ netPresentValue rate fvs =
     f :: PresentValue -> (FutureValue,Year) -> PresentValue
     f acc (fv,n) = acc + presentValue rate n fv
   in
-    foldl' f 0 fvs
+    foldl' f (money 0.00) fvs
 
