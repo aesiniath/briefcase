@@ -3,7 +3,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
 module Briefcase.TimeValueOfMoney (
-    Money(..)
+    Money( )
   , money
   , FutureValue
   , PresentValue
@@ -18,18 +18,38 @@ import Data.Fixed
 import Data.Foldable (foldl')
 
 {-
-    I know perfectly well that Double isn't an appropriate type for actual
-    amounts of money. Here we're just doing some basic estimation, so use
-    floating point for now.
+    This constructor is not exposed so that we can enforce appropriate rounding 
+    behaviour; otherwise Amount 5.119 gets you "5.11" not "5.12"
 -}
-newtype Money = Amount Double
+
+--
+-- | A type representing a decimal currency that has fractional units in
+-- hundredths. The constructor is /not/ exposed to avoid an unpleasant
+-- behaviour in the fixed point being used to represent the value internally.
+-- Use the 'money' function below to construct a Money value from an
+-- arbitrary integer or decimal.
+--
+
+newtype Money = Amount (Fixed E2)
     deriving (Num, Fractional, Real, RealFrac, Eq, Ord)
 
 --
--- | Take an amount as a Double and round it to hundredths of a dollar, aka
--- cents. Smart constructor (such a silly name) for Money type.
+-- | Take an amount as an Int or Double and round it to hundredths of a dollar,
+-- aka cents. Smart constructor (such a silly name) for Money type.
 --
-money :: Double -> Money
+-- >>> money 5
+-- 5.00
+--
+-- >>> money 5.0
+-- 5.00
+--
+-- >>> money 5.02
+-- 5.02
+--
+-- >>> money 5.029
+-- 5.03
+--
+money :: RealFrac a => a -> Money
 money x =
   let
     cents  = x * 100
@@ -38,16 +58,13 @@ money x =
   in
     Amount value
 
+{-
+    Relies on the fact that the value in Fixed E2 is already truncated to two
+    digits, so we don't need to do anything fancy any more; the Show instance
+    there is reliable.
+-}
 instance Show Money where
-    show (Amount x) =
-      let
-        cents = show (round (x * 100))
-        digits = length cents
-        (whole,part) = splitAt (digits - 2) cents
-        whole' = if length whole == 0 then "0" else whole
-        part'  = if length part == 1  then '0':part else part
-      in
-        whole' ++ "." ++ part'
+    show (Amount x) = show x
 
 type PresentValue = Money
 type FutureValue = Money
