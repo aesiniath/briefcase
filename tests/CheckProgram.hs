@@ -2,14 +2,16 @@
 
 module Main where
 
+import Control.Exception
 import Test.Hspec
 
 import Briefcase.TimeValueOfMoney
 
 main :: IO ()
 main = do
-    hspec suite
-    putStrLn "Done"
+    finally
+        (hspec suite)
+        (putStrLn ":done")
 
 suite :: Spec
 suite =
@@ -57,6 +59,9 @@ suite =
         it "present value of an two future cashflows" $ do
             netPresentValue rate [(1050.00,1), (1102.50,2)] `shouldBe` x * 2
 
+{-
+    Example from https://en.wikipedia.org/wiki/Present_value
+-}
         it "present value of an example stream" $ do
             netPresentValue rate [(100,1), (-50,2), (35,3)] `shouldBe` 80.12
 

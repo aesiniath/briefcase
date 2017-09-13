@@ -95,7 +95,7 @@ presentValue rate periods future =
     r = rate
     n = periods
     fv = realToFrac future
-    pv = fv / ((1 + r) ^ n)
+    pv = fv / (1 + r) ^ n
   in
     money pv
 
