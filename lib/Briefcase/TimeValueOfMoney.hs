@@ -49,11 +49,17 @@ newtype Money = Amount (Fixed E2)
 -- >>> money 5.029
 -- 5.03
 --
-money :: Double -> Money
+-- Went through several evolutions of picking a type for this. It's partly
+-- meant to enforce correct rounding behaviour of tenths of a cent, but also to
+-- enable testing and direct use cases with hard coded values in code. Haskell
+-- puts decimal literals as :: Fractional a => a. After a long spell with
+-- Double, just started using Haskell's ratio machinery.
+--
+money :: Rational -> Money
 money x =
   let
     cents  = x * 100
-    cents' = round cents :: Int
+    cents' = round cents :: Integer
     value  = (fromIntegral cents') / 100
   in
     Amount value
@@ -82,9 +88,10 @@ type Year = Int
 futureValue :: Rate -> Periods -> PresentValue -> FutureValue
 futureValue rate periods present =
   let
-    r = rate
+    r = toRational rate
     n = periods
     pv = realToFrac present
+
     fv = pv * (1 + r) ^ n
   in
     money fv
@@ -92,9 +99,10 @@ futureValue rate periods present =
 presentValue :: Rate -> Periods -> FutureValue -> PresentValue
 presentValue rate periods future =
   let
-    r = rate
+    r = toRational rate
     n = periods
     fv = realToFrac future
+
     pv = fv / (1 + r) ^ n
   in
     money pv
