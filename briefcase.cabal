@@ -1,6 +1,6 @@
 cabal-version:       >= 1.24
 name:                briefcase
-version:             0.1.1
+version:             0.1.2
 synopsis:            Utilities for assessing value of projects
 license:             BSD3
 license-file:        LICENCE
@@ -35,6 +35,7 @@ test-suite           check
   build-depends:     base,
                      HUnit,
                      hspec,
+                     formatting,
                      briefcase
 
   hs-source-dirs:    tests

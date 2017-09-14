@@ -49,12 +49,12 @@ newtype Money = Amount (Fixed E2)
 -- >>> money 5.029
 -- 5.03
 --
-money :: RealFrac a => a -> Money
+money :: Double -> Money
 money x =
   let
     cents  = x * 100
-    cents' = fromIntegral (round cents)
-    value  = cents' / 100
+    cents' = round cents :: Int
+    value  = (fromIntegral cents') / 100
   in
     Amount value
 
