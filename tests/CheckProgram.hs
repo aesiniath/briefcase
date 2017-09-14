@@ -4,14 +4,16 @@ module Main where
 
 import Control.Exception
 import Test.Hspec
+import Formatting
 
 import Briefcase.TimeValueOfMoney
+import Briefcase.Utilities
 
 main :: IO ()
 main = do
     finally
         (hspec suite)
-        (putStrLn ":done")
+        (putStrLn "")
 
 suite :: Spec
 suite =
@@ -31,6 +33,10 @@ suite =
             show (money 0.10) `shouldBe` "0.10"
             show (money 0.01) `shouldBe` "0.01"
             show (money 0.001) `shouldBe` "0.00"
+
+        it "Formatted output of Money values" $ do
+            format (dollarAmount) (money 12475665)    `shouldBe` "$12,475,665"
+            format (dollarAmount) (money 12475665.99) `shouldBe` "$12,475,666"
 
     describe "Basic Time Value of Money calculations" $ do
         it "instantaneous future value of an immediate cashflow is itself" $ do
