@@ -1,6 +1,6 @@
 cabal-version:       >= 1.24
 name:                briefcase
-version:             0.1.2
+version:             0.1.4
 synopsis:            Utilities for assessing value of projects
 license:             BSD3
 license-file:        LICENCE

@@ -9,6 +9,7 @@ module Briefcase.TimeValueOfMoney (
   , PresentValue
   , Rate
   , Periods
+  , discount
   , futureValue
   , presentValue
   , netPresentValue
@@ -49,11 +50,17 @@ newtype Money = Amount (Fixed E2)
 -- >>> money 5.029
 -- 5.03
 --
-money :: Double -> Money
+-- Went through several evolutions of picking a type for this. It's partly
+-- meant to enforce correct rounding behaviour of tenths of a cent, but also to
+-- enable testing and direct use cases with hard coded values in code. Haskell
+-- puts decimal literals as :: Fractional a => a. After a long spell with
+-- Double, just started using Haskell's ratio machinery.
+--
+money :: Rational -> Money
 money x =
   let
     cents  = x * 100
-    cents' = round cents :: Int
+    cents' = round cents :: Integer
     value  = (fromIntegral cents') / 100
   in
     Amount value
@@ -69,10 +76,24 @@ instance Show Money where
 type PresentValue = Money
 type FutureValue = Money
 
-type Rate = Double
+type Rate = Rational
 
 type Periods = Int
 type Year = Int
+
+
+--
+-- | Reduce a value by a given percentage.
+--
+discount :: Money -> Rational -> Money
+discount value rate =
+  let
+    v = toRational value
+    r = toRational rate
+
+    v' = v * (1 - r)
+  in
+    money v'
 
 --
 -- | Future value of an amount, discounted over time. You rarely ever need
@@ -82,9 +103,10 @@ type Year = Int
 futureValue :: Rate -> Periods -> PresentValue -> FutureValue
 futureValue rate periods present =
   let
-    r = rate
+    r = toRational rate
     n = periods
-    pv = realToFrac present
+    pv = toRational present
+
     fv = pv * (1 + r) ^ n
   in
     money fv
@@ -92,9 +114,10 @@ futureValue rate periods present =
 presentValue :: Rate -> Periods -> FutureValue -> PresentValue
 presentValue rate periods future =
   let
-    r = rate
+    r = toRational rate
     n = periods
-    fv = realToFrac future
+    fv = toRational future
+
     pv = fv / (1 + r) ^ n
   in
     money pv
