@@ -4,6 +4,7 @@
 module Briefcase.Utilities (
       percent
     , dollarAmount
+    , multiplier
 ) where
 
 import Formatting
@@ -37,4 +38,12 @@ dollarAmount =
 dollarAmount0 :: Format r (Int -> Int -> r)
 dollarAmount0 =
     "$" % commas % "." % left 2 ' '
+
+--
+-- | Given a number representing a ratio between two amounts,
+-- present it as a ratio.
+--
+multiplier :: Real a => Format r (a -> r)
+multiplier =
+    left 5 ' ' %. fixed 1 % "x"
 
