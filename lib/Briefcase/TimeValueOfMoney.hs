@@ -9,6 +9,7 @@ module Briefcase.TimeValueOfMoney (
   , PresentValue
   , Rate
   , Periods
+  , discount
   , futureValue
   , presentValue
   , netPresentValue
@@ -75,10 +76,24 @@ instance Show Money where
 type PresentValue = Money
 type FutureValue = Money
 
-type Rate = Double
+type Rate = Rational
 
 type Periods = Int
 type Year = Int
+
+
+--
+-- | Reduce a value by a given percentage.
+--
+discount :: Money -> Rational -> Money
+discount value rate =
+  let
+    v = toRational value
+    r = toRational rate
+
+    v' = v * (1 - r)
+  in
+    money v'
 
 --
 -- | Future value of an amount, discounted over time. You rarely ever need
@@ -90,7 +105,7 @@ futureValue rate periods present =
   let
     r = toRational rate
     n = periods
-    pv = realToFrac present
+    pv = toRational present
 
     fv = pv * (1 + r) ^ n
   in
@@ -101,7 +116,7 @@ presentValue rate periods future =
   let
     r = toRational rate
     n = periods
-    fv = realToFrac future
+    fv = toRational future
 
     pv = fv / (1 + r) ^ n
   in
