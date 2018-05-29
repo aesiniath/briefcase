@@ -37,6 +37,7 @@ suite =
         it "Formatted output of Money values" $ do
             format (dollarAmount) (money 12475665)    `shouldBe` "$12,475,665"
             format (dollarAmount) (money 12475665.99) `shouldBe` "$12,475,666"
+            format (dollarAmount) (money (-9.99)) `shouldBe` "-$10"
 
     describe "Basic Time Value of Money calculations" $ do
         it "instantaneous future value of an immediate cashflow is itself" $ do
