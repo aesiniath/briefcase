@@ -1,0 +1,39 @@
+name: briefcase
+version:  0.1.4
+synopsis: Utilities for assessing value of projects
+description: |
+  Tools for describing finances.
+
+stability: experimental
+license: BSD3
+license-file: LICENCE
+author: Andrew Cowie <andrew@operationaldynamics.com>
+maintainer: Andrew Cowie <andrew@operationaldynamics.com>
+copyright: © 2016-2019 Operational Dynamics Consulting Pty Ltd, and Others
+category: Text
+tested-with: GHC == 8.6
+github: afcowie/briefcase
+
+dependencies:
+ - base >= 4.11 && < 5
+ - formatting
+ - text
+
+ghc-options: -threaded -Wall -Wwarn -fwarn-tabs
+
+library:
+  source-dirs: lib
+  exposed-modules:
+  - Briefcase.TimeValueOfMoney
+  - Briefcase.Utilities
+
+tests:
+  check:
+    dependencies:
+     - hspec
+     - briefcase
+    ghc-options: -threaded
+    source-dirs:
+     - tests
+    main: CheckProgram.hs
+    other-modules: []
