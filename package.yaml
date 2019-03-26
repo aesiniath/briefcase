@@ -19,7 +19,7 @@ dependencies:
  - formatting
  - text
 
-ghc-options: -threaded -Wall -Wwarn -fwarn-tabs
+ghc-options: -Wall -Wwarn -fwarn-tabs
 
 library:
   source-dirs: lib
