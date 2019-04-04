@@ -1,5 +1,5 @@
 name: briefcase
-version:  0.1.4
+version:  0.2.0
 synopsis: Utilities for assessing value of projects
 description: |
   Tools for describing finances.
@@ -24,7 +24,8 @@ ghc-options: -Wall -Wwarn -fwarn-tabs
 library:
   source-dirs: lib
   exposed-modules:
-  - Briefcase.TimeValueOfMoney
+  - Briefcase.Money
+  - Briefcase.TimeValue
   - Briefcase.Utilities
 
 tests:

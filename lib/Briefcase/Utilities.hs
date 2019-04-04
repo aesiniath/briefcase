@@ -9,7 +9,7 @@ module Briefcase.Utilities (
 
 import Formatting
 
-import Briefcase.TimeValueOfMoney
+import Briefcase.TimeValue
 
 import Data.Monoid
 import qualified Data.Text.Lazy.IO as L
