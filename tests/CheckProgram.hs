@@ -3,10 +3,13 @@
 module Main where
 
 import Control.Exception
+import Data.Hourglass
 import Test.Hspec
 import Formatting
 
-import Briefcase.TimeValueOfMoney
+import Briefcase.CashFlow
+import Briefcase.Money
+import Briefcase.TimeValue
 import Briefcase.Utilities
 
 main :: IO ()
@@ -72,3 +75,82 @@ suite =
         it "present value of an example stream" $ do
             netPresentValue rate [(100,1), (-50,2), (35,3)] `shouldBe` 80.12
 
+    describe "Date ranges" $ do
+        it "generates quarterly increments" $ 
+          let
+            seed = Date 2019 April 08
+          in do
+            take 4 (quarterly seed) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+
+        it "generates monthly increments" $ 
+          let
+            seed = Date 2019 January 01
+          in do
+            take 12 (monthly seed) `shouldBe`
+                [ Date 2019 January 01
+                , Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                , Date 2019 May 01
+                , Date 2019 June 01
+                , Date 2019 July 01
+                , Date 2019 August 01
+                , Date 2019 September 01
+                , Date 2019 October 01
+                , Date 2019 November 01
+                , Date 2019 December 01
+                ]
+{-
+                [ Date 2019 January 31
+                , Date 2019 February 28
+                , Date 2019 March 31
+                , Date 2019 April 30
+                , Date 2019 May 31
+                , Date 2019 June 30
+                , Date 2019 July 31
+                , Date 2019 August 31
+                , Date 2019 September 30
+                , Date 2019 October 31
+                , Date 2019 November 30
+                , Date 2019 December 31
+                ]
+-}
+        it "generates fortnightly increments" $ 
+          let
+            seed = Date 2019 April 10
+          in do
+            take 3 (fortnightly seed) `shouldBe`
+                [ Date 2019 April 10
+                , Date 2019 April 24
+                , Date 2019 May 08
+                ]
+
+        it "extracts date ranges" $ 
+          let
+            list = take 5 (monthly (Date 2019 January 01))
+          in do
+            range (Date 2019 January 15) (Date 2019 March 15) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                ]
+            range (Date 2019 February 01) (Date 2019 March 31) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                ]
+            range (Date 2019 February 01) (Date 2019 April 01) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                ]
+            range (Date 2019 January 01) (Date 2019 May 01) list `shouldBe`
+                [ Date 2019 January 01
+                , Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                , Date 2019 May 01
+                ]
