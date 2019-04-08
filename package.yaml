@@ -1,5 +1,5 @@
 name: briefcase
-version:  0.2.0
+version:  0.2.1
 synopsis: Utilities for assessing value of projects
 description: |
   Tools for describing finances.
@@ -17,6 +17,7 @@ github: afcowie/briefcase
 dependencies:
  - base >= 4.11 && < 5
  - formatting
+ - hourglass
  - text
 
 ghc-options: -Wall -Wwarn -fwarn-tabs
@@ -24,6 +25,7 @@ ghc-options: -Wall -Wwarn -fwarn-tabs
 library:
   source-dirs: lib
   exposed-modules:
+  - Briefcase.CashFlow
   - Briefcase.Money
   - Briefcase.TimeValue
   - Briefcase.Utilities
