@@ -80,7 +80,7 @@ suite =
           let
             seed = Date 2019 April 08
           in do
-            take 4 (quarterly seed) `shouldBe`
+            take 4 (quarterlyDates seed) `shouldBe`
                 [ Date 2019 April 08
                 , Date 2019 July 08
                 , Date 2019 October 08
@@ -91,7 +91,7 @@ suite =
           let
             seed = Date 2019 January 01
           in do
-            take 12 (monthly seed) `shouldBe`
+            take 12 (monthlyDates seed) `shouldBe`
                 [ Date 2019 January 01
                 , Date 2019 February 01
                 , Date 2019 March 01
@@ -124,7 +124,7 @@ suite =
           let
             seed = Date 2019 April 10
           in do
-            take 3 (fortnightly seed) `shouldBe`
+            take 3 (fortnightlyDates seed) `shouldBe`
                 [ Date 2019 April 10
                 , Date 2019 April 24
                 , Date 2019 May 08
@@ -132,22 +132,22 @@ suite =
 
         it "extracts date ranges" $ 
           let
-            list = take 5 (monthly (Date 2019 January 01))
+            list = take 5 (monthlyDates (Date 2019 January 01))
           in do
-            range (Date 2019 January 15) (Date 2019 March 15) list `shouldBe`
+            rangeDates (Date 2019 January 15) (Date 2019 March 15) list `shouldBe`
                 [ Date 2019 February 01
                 , Date 2019 March 01
                 ]
-            range (Date 2019 February 01) (Date 2019 March 31) list `shouldBe`
+            rangeDates (Date 2019 February 01) (Date 2019 March 31) list `shouldBe`
                 [ Date 2019 February 01
                 , Date 2019 March 01
                 ]
-            range (Date 2019 February 01) (Date 2019 April 01) list `shouldBe`
+            rangeDates (Date 2019 February 01) (Date 2019 April 01) list `shouldBe`
                 [ Date 2019 February 01
                 , Date 2019 March 01
                 , Date 2019 April 01
                 ]
-            range (Date 2019 January 01) (Date 2019 May 01) list `shouldBe`
+            rangeDates (Date 2019 January 01) (Date 2019 May 01) list `shouldBe`
                 [ Date 2019 January 01
                 , Date 2019 February 01
                 , Date 2019 March 01
