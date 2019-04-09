@@ -19,6 +19,7 @@ dependencies:
  - formatting
  - hourglass
  - text
+ - unbeliever
 
 ghc-options: -Wall -Wwarn -fwarn-tabs
 
