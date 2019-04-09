@@ -4,6 +4,51 @@ module Briefcase.CashFlow where
 
 import Data.Hourglass (Date(..), Period(..), dateAddPeriod)
 
+import Core.Text
+import Briefcase.Money
+
+data CashFlow = CashFlow
+    { dateOf :: Date
+    , amountOf :: Money
+    , nameOf :: Rope
+    }
+    deriving (Show)
+
+{-|
+Given an (infinite) list of CashFlows, extract the flows that are within
+the specified date range. Relies on the assumption that the list of flows
+is in ascending order.
+-}
+range :: Date -> Date -> [CashFlow] -> [CashFlow]
+range from unto list = start list
+  where
+    start [] = []
+    start (flow:flows) = if (from > dateOf flow)
+        then start flows
+        else finish (flow:flows)
+
+    finish [] = []
+    finish (flow:flows) = if dateOf flow > unto
+        then []
+        else flow : finish flows
+
+quarterly :: Rope -> Money -> Date -> [CashFlow]
+quarterly = stream quarterlyDates
+
+monthly :: Rope -> Money -> Date -> [CashFlow]
+monthly = stream monthlyDates
+
+fortnightly :: Rope -> Money -> Date -> [CashFlow]
+fortnightly = stream fortnightlyDates
+
+stream :: (Date -> [Date]) -> Rope -> Money -> Date -> [CashFlow]
+stream f name amount seed =
+  let
+    dates = f seed
+  in
+    fmap (\date -> CashFlow { dateOf = date, amountOf = amount, nameOf = name }) dates
+
+
 {-|
 Extract a range of dates from a list. This would be useful to say "the cash
 flows for next year", thus bridging between a known time range and infinite
