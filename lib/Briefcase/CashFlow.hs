@@ -1,6 +1,20 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# OPTIONS_HADDOCK prune #-}
 
-module Briefcase.CashFlow where
+module Briefcase.CashFlow
+    ( CashFlow(..)
+    , range
+    , quarterly
+    , monthly
+    , fortnightly
+
+    -- for testing only
+    , rangeDates
+    , quarterlyDates
+    , monthlyDates
+    , fortnightlyDates
+    )
+where
 
 import Data.Hourglass (Date(..), Period(..), dateAddPeriod)
 
@@ -32,12 +46,21 @@ range from unto list = start list
         then []
         else flow : finish flows
 
+{-|
+A cash flow that repeats quarterly.
+-}
 quarterly :: Rope -> Money -> Date -> [CashFlow]
 quarterly = stream quarterlyDates
 
+{-|
+A cash flow that repeats monthly.
+-}
 monthly :: Rope -> Money -> Date -> [CashFlow]
 monthly = stream monthlyDates
 
+{-|
+A cash flow that repeats fortnightly.
+-}
 fortnightly :: Rope -> Money -> Date -> [CashFlow]
 fortnightly = stream fortnightlyDates
 
