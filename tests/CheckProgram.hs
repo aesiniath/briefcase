@@ -154,3 +154,75 @@ suite =
                 , Date 2019 April 01
                 , Date 2019 May 01
                 ]
+
+    describe "selecting CashFlows" $ do
+        it "quarterly flow" $
+          let
+            flow = quarterly "electricity" 1100.00 (Date 2019 April 08)
+          in do
+            fmap dateOf (take 4 flow) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+            fmap amountOf (take 4 flow) `shouldBe`
+                [ 1100.00
+                , 1100.00
+                , 1100.00
+                , 1100.00
+                ]
+            fmap nameOf (take 4 flow) `shouldBe`
+                [ "electricity"
+                , "electricity"
+                , "electricity"
+                , "electricity"
+                ]
+        -- ok, don't need to do that again; that's tested `series`
+            fmap dateOf (range (Date 2019 April 01) (Date 2020 April 01) flow) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+
+        it "monthly flow" $
+          let
+            flow = monthly "mobile phone" 45.00 (Date 2007 July 18)
+          in do
+            range (Date 2019 July 01) (Date 2019 October 01) flow `shouldBe`
+                [ CashFlow "mobile phone" 45.00 (Date 2019 July 18)
+                , CashFlow "mobile phone" 45.00 (Date 2019 August 18)
+                , CashFlow "mobile phone" 45.00 (Date 2019 September 18)
+                ]
+
+        it "fortnightly flow" $
+          let
+            flow = fortnightly "paycheck" (-1234.00) (Date 2019 April 10)
+          in do
+            range (Date 2019 April 01) (Date 2019 May 31) flow `shouldBe`
+                [ CashFlow "paycheck" (-1234.00) (Date 2019 April 10)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 April 24)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 May 08)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 May 22)
+                ]
+
+        it "series flow" $
+          let
+            flow = series "pub crawl"
+                [ (128.00,Date 2019 April 06)
+                , (256.00,Date 2019 May 04)
+                , (512.00,Date 2019 June 01)
+                ]
+          in do
+            range (Date 2019 January 01) (Date 2021 December 31) flow `shouldBe`
+                [ CashFlow "pub crawl" 128.00 (Date 2019 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2019 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2019 June 01)
+                , CashFlow "pub crawl" 128.00 (Date 2020 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2020 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2020 June 01)
+                , CashFlow "pub crawl" 128.00 (Date 2021 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2021 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2021 June 01)
+                ]
