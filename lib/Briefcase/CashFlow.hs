@@ -2,7 +2,10 @@
 {-# OPTIONS_HADDOCK prune #-}
 
 module Briefcase.CashFlow
-    ( CashFlow(..)
+    ( Grouping(..)
+    , grouping
+    , rangeOverGrouping
+    , CashFlow(..)
     , range
     , quarterly
     , monthly
@@ -21,6 +24,23 @@ import Data.Hourglass (Date(..), Period(..), dateAddPeriod)
 
 import Core.Text
 import Briefcase.Money
+
+data Grouping = Grouping
+    { labelOf :: Rope
+    , flowsIn :: [[CashFlow]]
+    }
+    deriving (Show)
+
+grouping :: Rope -> [[CashFlow]] -> Grouping
+grouping = Grouping
+
+rangeOverGrouping :: Date -> Date -> Grouping -> Grouping
+rangeOverGrouping from unto (Grouping label flows) =
+  let
+    flows' = fmap (range from unto) flows
+  in
+    Grouping label flows'
+
 
 data CashFlow = CashFlow
     { nameOf :: Rope
