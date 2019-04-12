@@ -7,9 +7,11 @@ module Briefcase.CashFlow
     , rangeOverGrouping
     , CashFlow(..)
     , range
+    , annually
     , quarterly
     , monthly
     , fortnightly
+    , weekly
     , series
 
     -- for testing only
@@ -69,6 +71,13 @@ range from unto list = start list
         then []
         else flow : finish flows
 
+
+{-|
+A cash flow that repeats every year.
+-}
+annually :: Rope -> Money -> Date -> [CashFlow]
+annually = stream annuallyDates
+
 {-|
 A cash flow that repeats quarterly.
 -}
@@ -86,6 +95,13 @@ A cash flow that repeats fortnightly.
 -}
 fortnightly :: Rope -> Money -> Date -> [CashFlow]
 fortnightly = stream fortnightlyDates
+
+{-|
+A cash flow that repeats every week.
+-}
+weekly :: Rope -> Money -> Date -> [CashFlow]
+weekly = stream weeklyDates
+
 
 stream :: (Date -> [Date]) -> Rope -> Money -> Date -> [CashFlow]
 stream f name amount seed =
@@ -125,6 +141,10 @@ rangeDates from unto list = start list
         then []
         else x : finish xs
 
+
+annuallyDates :: Date -> [Date]
+annuallyDates = increment (Period 1 0 0)
+
 quarterlyDates :: Date -> [Date]
 quarterlyDates = increment (Period 0 3 0)
 
@@ -133,6 +153,9 @@ monthlyDates = increment (Period 0 1 0)
 
 fortnightlyDates :: Date -> [Date]
 fortnightlyDates = increment (Period 0 0 14)
+
+weeklyDates :: Date -> [Date]
+weeklyDates = increment (Period 0 0 7)
 
 {-|
 Return an infinite lists of dates incrementing by the period specified,
