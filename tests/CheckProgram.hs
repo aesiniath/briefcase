@@ -226,3 +226,11 @@ suite =
                 , CashFlow "pub crawl" 256.00 (Date 2021 May 04)
                 , CashFlow "pub crawl" 512.00 (Date 2021 June 01)
                 ]
+
+    describe "totalling CashFlows" $ do
+        it "correctly sums a flow" $
+          let
+            flow = monthly "mobile phone" 45.00 (Date 2007 July 18)
+            list = range (Date 2019 July 01) (Date 2019 October 01) flow
+          in do
+            total list `shouldBe` 135.00

@@ -6,6 +6,7 @@ module Briefcase.CashFlow
     , grouping
     , rangeOverGrouping
     , CashFlow(..)
+    , total
     , range
     , annually
     , quarterly
@@ -22,6 +23,7 @@ module Briefcase.CashFlow
     )
 where
 
+import Data.Foldable (foldl')
 import Data.Hourglass (Date(..), Period(..), dateAddPeriod)
 
 import Core.Text
@@ -50,6 +52,14 @@ data CashFlow = CashFlow
     , dateOf :: Date
     }
     deriving (Show, Eq)
+
+{-|
+Given a /finite/ list of CashFlows, sum the amounts
+-}
+total :: [CashFlow] -> Money
+total flows = foldl' f 0.00 flows
+  where
+    f balance flow = balance + amountOf flow
 
 {-|
 Given an (infinite) list of CashFlows, extract the flows that are within
