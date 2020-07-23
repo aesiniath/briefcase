@@ -3,10 +3,13 @@
 module Main where
 
 import Control.Exception
+import Data.Hourglass
 import Test.Hspec
 import Formatting
 
-import Briefcase.TimeValueOfMoney
+import Briefcase.CashFlow
+import Briefcase.Money
+import Briefcase.TimeValue
 import Briefcase.Utilities
 
 main :: IO ()
@@ -72,3 +75,162 @@ suite =
         it "present value of an example stream" $ do
             netPresentValue rate [(100,1), (-50,2), (35,3)] `shouldBe` 80.12
 
+    describe "Date ranges" $ do
+        it "generates quarterly increments" $ 
+          let
+            seed = Date 2019 April 08
+          in do
+            take 4 (quarterlyDates seed) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+
+        it "generates monthly increments" $ 
+          let
+            seed = Date 2019 January 01
+          in do
+            take 12 (monthlyDates seed) `shouldBe`
+                [ Date 2019 January 01
+                , Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                , Date 2019 May 01
+                , Date 2019 June 01
+                , Date 2019 July 01
+                , Date 2019 August 01
+                , Date 2019 September 01
+                , Date 2019 October 01
+                , Date 2019 November 01
+                , Date 2019 December 01
+                ]
+{-
+                [ Date 2019 January 31
+                , Date 2019 February 28
+                , Date 2019 March 31
+                , Date 2019 April 30
+                , Date 2019 May 31
+                , Date 2019 June 30
+                , Date 2019 July 31
+                , Date 2019 August 31
+                , Date 2019 September 30
+                , Date 2019 October 31
+                , Date 2019 November 30
+                , Date 2019 December 31
+                ]
+-}
+        it "generates fortnightly increments" $ 
+          let
+            seed = Date 2019 April 10
+          in do
+            take 3 (fortnightlyDates seed) `shouldBe`
+                [ Date 2019 April 10
+                , Date 2019 April 24
+                , Date 2019 May 08
+                ]
+
+        it "extracts date ranges" $ 
+          let
+            list = take 5 (monthlyDates (Date 2019 January 01))
+          in do
+            rangeDates (Date 2019 January 15) (Date 2019 March 15) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                ]
+            rangeDates (Date 2019 February 01) (Date 2019 March 31) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                ]
+            rangeDates (Date 2019 February 01) (Date 2019 April 01) list `shouldBe`
+                [ Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                ]
+            rangeDates (Date 2019 January 01) (Date 2019 May 01) list `shouldBe`
+                [ Date 2019 January 01
+                , Date 2019 February 01
+                , Date 2019 March 01
+                , Date 2019 April 01
+                , Date 2019 May 01
+                ]
+
+    describe "selecting CashFlows" $ do
+        it "quarterly flow" $
+          let
+            flow = quarterly "electricity" 1100.00 (Date 2019 April 08)
+          in do
+            fmap dateOf (take 4 flow) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+            fmap amountOf (take 4 flow) `shouldBe`
+                [ 1100.00
+                , 1100.00
+                , 1100.00
+                , 1100.00
+                ]
+            fmap nameOf (take 4 flow) `shouldBe`
+                [ "electricity"
+                , "electricity"
+                , "electricity"
+                , "electricity"
+                ]
+        -- ok, don't need to do that again; that's tested `series`
+            fmap dateOf (range (Date 2019 April 01) (Date 2020 April 01) flow) `shouldBe`
+                [ Date 2019 April 08
+                , Date 2019 July 08
+                , Date 2019 October 08
+                , Date 2020 January 08
+                ]
+
+        it "monthly flow" $
+          let
+            flow = monthly "mobile phone" 45.00 (Date 2007 July 18)
+          in do
+            range (Date 2019 July 01) (Date 2019 October 01) flow `shouldBe`
+                [ CashFlow "mobile phone" 45.00 (Date 2019 July 18)
+                , CashFlow "mobile phone" 45.00 (Date 2019 August 18)
+                , CashFlow "mobile phone" 45.00 (Date 2019 September 18)
+                ]
+
+        it "fortnightly flow" $
+          let
+            flow = fortnightly "paycheck" (-1234.00) (Date 2019 April 10)
+          in do
+            range (Date 2019 April 01) (Date 2019 May 31) flow `shouldBe`
+                [ CashFlow "paycheck" (-1234.00) (Date 2019 April 10)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 April 24)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 May 08)
+                , CashFlow "paycheck" (-1234.00) (Date 2019 May 22)
+                ]
+
+        it "series flow" $
+          let
+            flow = series "pub crawl"
+                [ (128.00,Date 2019 April 06)
+                , (256.00,Date 2019 May 04)
+                , (512.00,Date 2019 June 01)
+                ]
+          in do
+            range (Date 2019 January 01) (Date 2021 December 31) flow `shouldBe`
+                [ CashFlow "pub crawl" 128.00 (Date 2019 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2019 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2019 June 01)
+                , CashFlow "pub crawl" 128.00 (Date 2020 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2020 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2020 June 01)
+                , CashFlow "pub crawl" 128.00 (Date 2021 April 06)
+                , CashFlow "pub crawl" 256.00 (Date 2021 May 04)
+                , CashFlow "pub crawl" 512.00 (Date 2021 June 01)
+                ]
+
+    describe "totalling CashFlows" $ do
+        it "correctly sums a flow" $
+          let
+            flow = monthly "mobile phone" 45.00 (Date 2007 July 18)
+            list = range (Date 2019 July 01) (Date 2019 October 01) flow
+          in do
+            total list `shouldBe` 135.00
