@@ -5,6 +5,7 @@ module Briefcase.CashFlow
     ( Grouping(..)
     , grouping
     , rangeOverGrouping
+    , totalOverGrouping
     , CashFlow(..)
     , total
     , range
@@ -37,6 +38,9 @@ data Grouping = Grouping
 
 grouping :: Rope -> [[CashFlow]] -> Grouping
 grouping = Grouping
+
+totalOverGrouping :: Grouping -> Money
+totalOverGrouping (Grouping _ flows) = foldl' (+) 0.00 . fmap total $ flows
 
 rangeOverGrouping :: Date -> Date -> Grouping -> Grouping
 rangeOverGrouping from unto (Grouping label flows) =

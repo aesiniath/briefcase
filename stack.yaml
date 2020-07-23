@@ -1,3 +1,1 @@
-resolver: lts-13.15
-extra-deps:
- - /home/andrew/src/oprdyn/unbeliever
+resolver: lts-16.5
