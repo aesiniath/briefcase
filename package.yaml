@@ -6,12 +6,12 @@ description: |
 
 stability: experimental
 license: BSD3
-license-file: LICENCE
+license-file: LICENSE
 author: Andrew Cowie <istathar@gmail.com>
 maintainer: Andrew Cowie <istathar@gmail.com>
 copyright: © 2016-2020 Athae Eredh Siniath and Others
 category: Text
-tested-with: GHC == 8.8.3
+tested-with: GHC == 8.8.4
 github: aesiniath/briefcase
 
 dependencies:
